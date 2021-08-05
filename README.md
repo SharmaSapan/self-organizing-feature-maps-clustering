@@ -5,7 +5,9 @@ Clustering is a task of grouping set of objects with similar features or data po
 
 ### Colour Organization
 
-<img src="https://github.com/SharmaSapan/self-organizing-feature-maps-clustering/blob/master/colour1/colour_gif.gif" width="300" height="300" />                          <img src="https://github.com/SharmaSapan/self-organizing-feature-maps-clustering/blob/master/colour2/colour_gif.gif" width="300" height="300" />                          <img src="https://github.com/SharmaSapan/self-organizing-feature-maps-clustering/blob/master/colour3/colour_gif.gif" width="300" height="300" />
+Kohonen networks on random colours. A N `×` N grid of vectors, initially randomized is trained on random colour vectors. Each individual pixel visualizes a map as an image/panel or an individual node in the network which are then clustered according to their colour. 
+
+<img src="https://github.com/SharmaSapan/self-organizing-feature-maps-clustering/blob/master/colour1/colour_gif.gif" width="300" height="300" /> <img src="https://github.com/SharmaSapan/self-organizing-feature-maps-clustering/blob/master/colour2/colour_gif.gif" width="300" height="300" /> <img src="https://github.com/SharmaSapan/self-organizing-feature-maps-clustering/blob/master/colour3/colour_gif.gif" width="300" height="300" />
 
 To run part 1 run main file and enter 1 and follow command line prompts for parameters.
 
@@ -30,9 +32,12 @@ A GIF is stored showing visualizations along with images of your interval.
 ### Image Compression 
 
 Image compression is done using Self-organizing feature maps by clustering the frames and using network indices mapped to image frames indices and stored as a binary codebook. Codebook has all the necessary information to regenerate the image and test the compression.
+
 Image is converted to grayscale and is divided into frames. A unit class is used to initialize SOFM nodes in network and store its variables. Compression algorithm then initializes a Best matching unit and finds its Euclidean distance from the input vector. Node with the least distance in the network to input is then chosen. Weight update is performed on the node by factor of learning rate as in this code: new_weight = BMU_frame.sofm[b_index] + lr*(input_frame[b_index]-BMU_frame.sofm[b_index]). No neighborhood multiplier is used since that will be one due to distance from BMU to BMU itself. Then a for loop is used to iterate through the four quadrants around BMU node according to the given radius. On Y-axis, weight update starts at BMU y-coordinate – neigh_radius till BMU y-coordinate + neigh_radius. And moving to X-axis both on left side and right side, weight update is done within the perimeter of the circle around BMU.  Neighbourhood multiplier is used to update weight which is found by code: neigh_multi = pow(math.exp(1),(-1*(((sofm_map[xl][y].getEDistance(BMU_frame.sofm))*(sofm_map[xl][y].getEDistance(BMU_frame.sofm)))/(2*neigh_size*neigh_size)))).
 
 After training, frames are matched to the network to find index of the best matching node to each frame using Euclidean distance. And if the SOFM map is 4*4 indices are converted to store in one nybble per frame fashion. Then the codebook is stored in binary file in a format:  Width of image(in frames), height of image(in frames), width of single frame, height of single frame, width of network, height of network, map result from SOFM units in 1D, and indices of map which matches best to each frame of the image. Binary file is then read to reconstruct the image from the generated codebook. The high nibble and low nibble are separated if the network is 4*4 and mapped to SOFM to reconstruct image. Accuracy is calculated using the square root of sum of difference squared between pixel intensities of Reconstructed image and original grayscale image. Binary files, images screenshot and command line output are stored in compressed_data folder with the file names according to their parameters. A window with the reconstructed image pops up at the end of run.
+
+Tests were conducted to compare different parameters and image complexities.
 
 Code was tested on four different images with their own unique sets of features. P1 image is of a furry fox in snow. It was compressed using 8 frame size (which make 8*8 frames) on a 16*16 config, with 0.9 learning rate with 10,000 epochs for different neighbour radius. A radius of 70 generated higher root squared absolute sum of distance 35800 to 46982 by about 31% to radius with 150. It was also evident from the image as screenshot shown side by side of Neighbouring distance of 70, then 150.
 
